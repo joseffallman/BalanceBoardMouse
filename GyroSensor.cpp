@@ -1,70 +1,19 @@
-#include "MyDevice.h"
+#include "GyroSensor.h"
 
 
-MyDevice::MyDevice()
+GyroSensor::GyroSensor()
 {
 }
 
 
-MyDevice::~MyDevice()
+GyroSensor::~GyroSensor()
 {
 }
 
-//Starts and handle all bluetooth setup
-void MyDevice::initBluetooth()
-{
-	_bledis = new BLEDis;
-	_blehid = new BLEHidAdafruit;
-	
-	Bluefruit.begin();
-	// HID Device can have a min connection interval of 9*1.25 = 11.25 ms
-	Bluefruit.setConnInterval(9, 16); // min = 9*1.25=11.25 ms, max = 16*1.25=20ms
-	Bluefruit.setName("Bluefruit52");
-	
-	// Configure and Start Device Information Service
-	/*bledis.setManufacturer("Adafruit Industries");
-	bledis.setModel("Bluefruit Feather 52");
-	bledis.begin();*/
-	_bledis->setManufacturer("Adafruit Industries");
-	_bledis->setModel("Bluefruit Feather 52");
-	_bledis->begin();
 
-
-	// BLE HID
-	/*blehid.begin(); */
-	_blehid->begin();
-
-	// Set up Advertising Packet
-	Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
-	Bluefruit.Advertising.addTxPower();
-
-	Bluefruit.Advertising.addAppearance(BLE_APPEARANCE_HID_MOUSE);
-
-	// Include BLE HID service
-	Bluefruit.Advertising.addService(*_blehid);
-
-	// There is enough room for the name in the advertising packet
-	Bluefruit.Advertising.addName();
-
-	// Start Advertising
-	Bluefruit.Advertising.start();
-}
-
-/*
- * 
- * Moves the mouse
- *
- */
-void MyDevice::HIDmoveMouse(int x, int y) {
-	if (_blehid != NULL) {
-		Serial.print("Mouse x: "); Serial.println(x);
-		Serial.print("Mouse y: "); Serial.println(y);
-		_blehid->mouseMove(x, y);
-	}
-}
 
 //Start and handle all motion sensor
-void MyDevice::initSensor() {
+void GyroSensor::initSensor() {
 
 	// Initialize the sensors.
 	if (!gyro.begin())
@@ -84,12 +33,12 @@ void MyDevice::initSensor() {
 	filter.begin(25);
 }
 
-//MySensorData* MyDevice::GetSensorMotion() {
-void MyDevice::GetSensorMotion(int &retX, int &retY) {
+//MySensorData* GyroSensor::GetSensorMotion() {
+void GyroSensor::GetSensorMotion(int &retX, int &retY) {
 	int z;
 	GetSensorMotion(retX, retY, z);
 }
-void MyDevice::GetSensorMotion(int &retX, int &retY, int &retZ) {
+void GyroSensor::GetSensorMotion(int &retX, int &retY, int &retZ) {
 	/*
 	sensors_event_t gyro_event;
 	sensors_event_t accel_event;
@@ -137,7 +86,7 @@ void MyDevice::GetSensorMotion(int &retX, int &retY, int &retZ) {
 //
 // Calculates the motion 
 //
-int MyDevice::calcMotion(int val) {
+int GyroSensor::calcMotion(int val) {
 	if (_threshold > abs(val)) {
 		return 0;
 	}
@@ -153,24 +102,4 @@ int MyDevice::calcMotion(int val) {
 	return val;
 	//_threshold
 	//_multiple
-}
-
-void MyDevice::initButtons() {
-	/*
-	for (i = 0; i < sizeof(_buttons); i++) {
-		pinMode(_buttons[i], INPUT_PULLUP);
-	}
-	*/
-}
-
-//Loop throu all buttons to check any of them are pressed
-void MyDevice::checkButtons() {
-	/*
-	for (i = 0; i < sizeof(_buttons); i++) {
-		_bReading = digitalRead(_buttons[i]);
-		if (_bReading == LOW) {
-
-		}
-	}
-	*/
 }
