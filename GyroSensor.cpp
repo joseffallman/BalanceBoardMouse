@@ -30,7 +30,7 @@ void GyroSensor::initSensor() {
 
 	// Filter expects 70 samples per second
 	// Based on a Bluefruit M0 Feather ... rate should be adjuted for other MCUs
-	filter.begin(25);
+	filter.begin(10);
 }
 
 //MySensorData* GyroSensor::GetSensorMotion() {
@@ -85,6 +85,7 @@ void GyroSensor::GetSensorMotion(int &retX, int &retY, int &retZ) {
 
 //
 // Calculates the motion 
+// If its above threshold then ad multiple
 //
 int GyroSensor::calcMotion(int val) {
 	if (_threshold > abs(val)) {
@@ -100,6 +101,4 @@ int GyroSensor::calcMotion(int val) {
 		return 0 - val;
 	}
 	return val;
-	//_threshold
-	//_multiple
 }
